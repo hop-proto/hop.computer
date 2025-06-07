@@ -7,7 +7,12 @@ It is currently implemented as a Go program using `go:embed`. The /hop path
 needs to return a special meta tag in order for `go.mod` to work correctly.
 
 ```html
-  <meta name="go-import" content="hop.computer/hop git https://github.com/hop-proto/hop-go" />
+<meta name="go-import" content="hop.computer/hop git https://github.com/hop-proto/hop-go" />
+```
+
+Similar for `/vend`
+```html
+<meta name="go-import" content="hop.computer/hop git https://github.com/hop-proto/hop-vend" />
 ```
 
 ## Running locally
