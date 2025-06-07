@@ -48,6 +48,10 @@ func redirectToWithMeta(destination string) http.HandlerFunc {
 	}
 }
 
+func ok(w http.ResponseWriter, r *http.Request) {
+	_, _ = w.Write([]byte("nothing to see here\n"))
+}
+
 func main() {
 	flag.StringVar(&address, "address", ":8080", "listen address")
 	flag.Parse()
@@ -55,6 +59,7 @@ func main() {
 	mux := goji.NewMux()
 	mux.Handle(pat.Get("/hop"), redirectToWithMeta("https://github.com/hop-proto/hop-go"))
 	mux.Handle(pat.Get("/vend"), redirectToWithMeta("https://github.com/hop-proto/hop-vend"))
+	mux.Handle(pat.Get("/"), http.HandlerFunc(ok))
 
 	log.Printf("listening on %s", address)
 	_ = http.ListenAndServe(address, mux)
