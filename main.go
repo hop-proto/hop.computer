@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"flag"
+	"html/template"
 	"net/http"
 
 	_ "embed"
@@ -15,13 +17,34 @@ import (
 var address string
 
 //go:embed body.html
-var body []byte
+var bodyHTML string
+
+var bodyTemplate *template.Template
+
+func init() {
+	tmpl, err := template.New("body").Parse(string(bodyHTML))
+	if err != nil {
+		log.Fatalf("failed to parse body.html template: %v", err)
+	}
+	bodyTemplate = tmpl
+}
 
 func redirectToWithMeta(destination string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Location", destination)
 		w.WriteHeader(302)
-		_, _ = w.Write(body)
+
+		var buf bytes.Buffer
+		err := bodyTemplate.Execute(&buf, map[string]string{
+			"PackageName": "hop.computer" + r.URL.Path,
+			"GitURL":      destination,
+		})
+		if err != nil {
+			http.Error(w, "template execution error", http.StatusInternalServerError)
+			return
+		}
+
+		_, _ = w.Write(buf.Bytes())
 	}
 }
 
