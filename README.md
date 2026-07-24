@@ -1,7 +1,7 @@
 hop.computer
 ============
 
-DNS is in Google Domains. David owns the domain in his personal account.
+DNS is in Cloudflare. David owns the domain in his personal account.
 
 It is currently implemented as a Go program using `go:embed`. The /hop path
 needs to return a special meta tag in order for `go.mod` to work correctly.
@@ -26,7 +26,7 @@ CLI args when deploying.
 
 ## Deploying
 
-The site runs on fly.io under the Hop organization.
+The site runs on fly.io under the Hop organization, which David also owns.
 
 ```cmd
 $ flyctl auth login
