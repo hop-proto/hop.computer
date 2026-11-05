@@ -29,11 +29,10 @@
         </div>
     </header>
 
-    <!-- ===================== CONTENT ===================== -->
     <main class="grid">
 
         <!-- Row 1 -->
-        <section class="card">
+        <section class="card c-why">
             <h2>Why SSH Struggles in Today’s Environment</h2>
             <ul>
                 <li><b>In-band negotiation:</b> State-machine complexity → crypto downgrade</li>
@@ -45,7 +44,7 @@
             <p class="question">→ What if we take a clean-slate approach instead of patching SSH?</p>
         </section>
 
-        <section class="card">
+        <section class="card c-noise">
             <h2>Noise Handshake &amp; Hidden Mode</h2>
             <ul>
                 <li><b>Fixed Cipher Suites:</b> Prevent downgrade attacks (e.g., Terrapin)</li>
@@ -56,7 +55,7 @@
             </div>
         </section>
 
-        <section class="card">
+        <section class="card c-identity">
             <h2>Automated Host Identity</h2>
             <ul>
                 <li><b>Hop Certificates:</b> native, chain of trust, avoid parsing complexity</li>
@@ -82,14 +81,14 @@
         </section>
 
         <!-- Row 2 -->
-        <section class="card">
+        <section class="card c-stack">
             <h2><span class="hop">Hop</span> Inner Sub-Protocols over UDP</h2>
             <div class="figure">
                 <img src="images/protocol-stack.png" alt="Protocol stack: SSH runs Connection, Userauth and Transport over TCP; Hop runs Remote Access, Tubes and Transport over UDP">
             </div>
         </section>
 
-        <section class="card">
+        <section class="card c-authgrant">
             <h2>Secure Delegation: AuthGrant</h2>
             <ul>
                 <li><b>Replaces</b> agent forwarding (<i>ssh -A</i>)</li>
@@ -114,7 +113,7 @@
         </section>
 
         <div class="stack">
-            <section class="card">
+            <section class="card c-practice">
                 <h2><span class="hop">Hop</span> in Practice</h2>
                 <div class="split practice">
                     <ul>
@@ -134,7 +133,7 @@
                 </div>
             </section>
 
-            <section class="card">
+            <section class="card c-contact">
                 <h2>Link and Contact</h2>
                 <div class="split contact">
                     <div>
