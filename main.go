@@ -6,7 +6,8 @@ import (
 	"html/template"
 	"net/http"
 
-	_ "embed"
+	"embed"
+	"io/fs"
 
 	"log"
 
