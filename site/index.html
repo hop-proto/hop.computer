@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hop: A Modern Transport and Remote Access Protocol</title>
+    <meta name="description" content="Hop is a simpler and more secure alternative to SSH: a modern transport and remote access protocol.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+
+    <header class="masthead">
+        <div class="center">
+            <h1 class="title">
+                <img src="images/hop-frog.png" alt="" width="60" height="60">
+                <span><span class="hop">Hop</span>: A Modern Transport and Remote Access Protocol</span>
+            </h1>
+            <p class="tagline">a <u>simpler</u> and more <u>secure</u> alternative to SSH</p>
+            <p class="authors">Paul Flammarion, George Hosono, Wilson Nguyen, Laura Bauman, Daniel Rebelsky, Gerry Wan, David Adrian, Zakir Durumeric</p>
+            <p class="venue">USENIX Security ’26</p>
+            <nav class="buttons">
+                <a href="https://paul.flammarion.eu/document/flammarion2026hop.pdf">Paper (PDF)</a>
+                <a href="https://github.com/hop-proto/hop-go">Code on GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===================== CONTENT ===================== -->
+    <main class="grid">
+
+        <!-- Row 1 -->
+        <section class="card">
+            <h2>Why SSH Struggles in Today’s Environment</h2>
+            <ul>
+                <li><b>In-band negotiation:</b> State-machine complexity → crypto downgrade</li>
+                <li><b>Probing:</b> Key-oracle → identity exposure to active scanners</li>
+                <li><b>Unbounded agent forwarding:</b> <i>ssh -A</i> → lateral-movement vector</li>
+                <li><b>TOFU:</b> Unscalable manual key checks → MITM attacks</li>
+            </ul>
+            <p class="note"><b>30 Years:</b> 35 RFCs expanded attack surface &amp; <b>protocol complexity</b></p>
+            <p class="question">→ What if we take a clean-slate approach instead of patching SSH?</p>
+        </section>
+
+        <section class="card">
+            <h2>Noise Handshake &amp; Hidden Mode</h2>
+            <ul>
+                <li><b>Fixed Cipher Suites:</b> Prevent downgrade attacks (e.g., Terrapin)</li>
+                <li><b>Hidden Mode:</b> Unauthenticated probes get no response</li>
+            </ul>
+            <div class="figure">
+                <img src="images/handshake.png" alt="Noise handshake: the client sends Encaps(skem), ekem, s and the server replies Encaps(ekem), s, ss">
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Automated Host Identity</h2>
+            <ul>
+                <li><b>Hop Certificates:</b> native, chain of trust, avoid parsing complexity</li>
+                <li>Native ACME Protocol: <b>Automated certificate issuance</b></li>
+                <li><b>Replace</b> Trust-On-First-Use</li>
+            </ul>
+            <div class="split cert-split">
+                <table class="cert">
+                    <thead><tr><th>Field</th><th>Size (bytes)</th></tr></thead>
+                    <tbody>
+                    <tr><td>Header</td><td>4</td></tr>
+                    <tr><td>Validity Period</td><td>16</td></tr>
+                    <tr><td>Public Key</td><td>32</td></tr>
+                    <tr><td>Parent Fingerprint</td><td>32</td></tr>
+                    <tr><td>Identities</td><td>6–514</td></tr>
+                    <tr><td>Parent Signature</td><td>64</td></tr>
+                    </tbody>
+                </table>
+                <div class="figure">
+                    <img src="images/cert-chain.png" alt="Root Hop Cert signs Intermediate Hop Cert, which signs Leaf Hop Cert">
+                </div>
+            </div>
+        </section>
+
+        <!-- Row 2 -->
+        <section class="card">
+            <h2><span class="hop">Hop</span> Inner Sub-Protocols over UDP</h2>
+            <div class="figure">
+                <img src="images/protocol-stack.png" alt="Protocol stack: SSH runs Connection, Userauth and Transport over TCP; Hop runs Remote Access, Tubes and Transport over UDP">
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Secure Delegation: AuthGrant</h2>
+            <ul>
+                <li><b>Replaces</b> agent forwarding (<i>ssh -A</i>)</li>
+                <li>Bastions operate as <b>dumb UDP pipes</b> without keys</li>
+            </ul>
+            <div class="figure">
+                <img src="images/authgrant-flow.png" alt="AuthGrant flow between the client, the bastion and the target host">
+            </div>
+            <div class="prompt-wrap">
+                <div class="prompt" aria-label="Example AuthGrant approval prompt">
+                    <span class="lbl"></span><span class="ln">Would you like to</span>
+                    <span class="lbl">Who,</span><span class="ln"><span class="bar">│</span>allow <b class="c-host">bob.cloud.com</b></span>
+                    <span class="lbl">what,</span><span class="ln"><span class="bar">│</span>to run the command <span class="c-cmd">'sudo reboot'</span></span>
+                    <span class="lbl two">to whom,</span><span class="ln"><span class="bar">│</span>as <i class="c-user">alice</i></span>
+                    <span class="ln"><span class="bar">│</span>on <b class="c-target">private.server.com</b></span>
+                    <span class="lbl two">and when?</span><span class="ln"><span class="bar">│</span>from <span class="c-time">Wed Apr  9 16:03:28 EDT 2025</span></span>
+                    <span class="ln"><span class="bar">│</span>until <span class="c-time">Wed Apr  9 16:04:28 EDT 2025</span>?</span>
+                    <span class="lbl"></span><span class="ln">    <span class="c-yes">Yes</span></span>
+                    <span class="lbl"></span><span class="ln">  <span class="c-no">&gt; No</span></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="stack">
+            <section class="card">
+                <h2><span class="hop">Hop</span> in Practice</h2>
+                <div class="split practice">
+                    <ul>
+                        <li>Reference implementation in Go (<b>~18k LoC</b>)</li>
+                        <li>Feature <b>parity with SSH</b>:
+                            <ul>
+                                <li>Interactive remote login shell</li>
+                                <li>Remote command execution</li>
+                                <li>Local and remote port forwarding</li>
+                            </ul>
+                        </li>
+                        <li><b>Faster</b> Session Establishment</li>
+                    </ul>
+                    <div class="figure">
+                        <img src="images/time-to-shell.png" alt="Time to shell: Hop 0.43 s, SSH 1.18 s">
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Link and Contact</h2>
+                <div class="split contact">
+                    <div>
+                        <p><a href="https://github.com/hop-proto/hop-go">github.com/hop-proto/hop-go</a></p>
+                        <p>Paul Flammarion – <a href="mailto:paul@uci.edu">paul@uci.edu</a></p>
+                    </div>
+                    <div class="figure">
+                        <img src="images/qr.png" alt="QR code linking to github.com/hop-proto/hop-go">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="foot">
+        <p>Hop was supported in part by a Sloan Research Fellowship and the National Science Foundation under Grant #2319080.</p>
+        <p>Code released under the Apache 2.0 license.</p>
+    </footer>
+
+</div>
+</body>
+</html>

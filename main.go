@@ -16,6 +16,9 @@ import (
 
 var address string
 
+//go:embed site
+var siteFS embed.FS
+
 //go:embed body.html
 var bodyHTML string
 
@@ -56,10 +59,15 @@ func main() {
 	flag.StringVar(&address, "address", ":8080", "listen address")
 	flag.Parse()
 
+	site, err := fs.Sub(siteFS, "site")
+    if err != nil {
+    	log.Fatal(err)
+    }
+
 	mux := goji.NewMux()
 	mux.Handle(pat.Get("/hop"), redirectToWithMeta("https://github.com/hop-proto/hop-go"))
 	mux.Handle(pat.Get("/vend"), redirectToWithMeta("https://github.com/hop-proto/hop-vend"))
-	mux.Handle(pat.Get("/"), http.HandlerFunc(init))
+	mux.Handle(pat.Get("/*"), http.FileServer(http.FS(site)))
 
 	log.Printf("listening on %s", address)
 	_ = http.ListenAndServe(address, mux)
