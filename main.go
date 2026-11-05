@@ -59,7 +59,7 @@ func main() {
 	mux := goji.NewMux()
 	mux.Handle(pat.Get("/hop"), redirectToWithMeta("https://github.com/hop-proto/hop-go"))
 	mux.Handle(pat.Get("/vend"), redirectToWithMeta("https://github.com/hop-proto/hop-vend"))
-	mux.Handle(pat.Get("/"), http.HandlerFunc(ok))
+	mux.Handle(pat.Get("/"), http.HandlerFunc(init))
 
 	log.Printf("listening on %s", address)
 	_ = http.ListenAndServe(address, mux)
